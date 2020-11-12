@@ -1,7 +1,3 @@
-<h1>Hi Julia!</h1>
-<p>Schwierigkeitsgrad und Dauer einstellen und los gehts mit dem Kopfrechnen!</p>
-
-<br />
 <h3>Zahlenraum</h3>
 <p>
   <mat-button-toggle-group name="numberSpace" aria-label="Zahlenraum" (change)="setNumberSpace($event)" [value]="numberSpace$ | async">
@@ -10,7 +6,6 @@
     <mat-button-toggle [value]="numberSpace.BIG">Schwierig</mat-button-toggle>
   </mat-button-toggle-group>
 </p>
-
 <br />
 <h3>Dauer</h3>
 <p>
@@ -20,6 +15,22 @@
     <mat-button-toggle [value]="duration.LONG">{{ duration.LONG }}s</mat-button-toggle>
   </mat-button-toggle-group>
 </p>
-
+<br />
+<h3>Operatoren</h3>
+<p>
+  <mat-button-toggle-group
+    class="four"
+    name="operators"
+    aria-label="Operatoren"
+    (change)="setOperators($event)"
+    [value]="operators$ | async"
+    multiple
+  >
+    <mat-button-toggle [value]="operator.ADD">+</mat-button-toggle>
+    <mat-button-toggle [value]="operator.SUBTRACT">-</mat-button-toggle>
+    <mat-button-toggle [value]="operator.MULTIPLY">*</mat-button-toggle>
+    <mat-button-toggle [value]="operator.DIVIDE">/</mat-button-toggle>
+  </mat-button-toggle-group>
+</p>
 <br />
 <button mat-button mat-raised-button color="primary" routerLink="/game">Starten</button>

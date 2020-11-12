@@ -1,3 +1,19 @@
 .container {
   padding: 30px;
 }
+
+.outer {
+  width: 100%;
+  max-width: 480px;
+  box-sizing: border-box;
+}
+
+@media screen and (min-width: 500px) {
+  .outer {
+    background: white;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    margin: 50px auto;
+    overflow: hidden;
+  }
+}

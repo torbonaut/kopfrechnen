@@ -1,4 +1,4 @@
-export enum Operand {
+export enum Operator {
   ADD= 1,
   SUBTRACT= 2,
   MULTIPLY= 3,
@@ -20,8 +20,10 @@ export enum Duration {
 export interface Exercise {
   a: number;
   b: number;
-  operand: Operand;
-  answer: number;
-  duration: number;
-  result: boolean;
+  operator: number;
+  answer: number | undefined;
+  strAnswer: string;
+  startTime: number;
+  endTime: number;
+  resultCorrect: boolean;
 }

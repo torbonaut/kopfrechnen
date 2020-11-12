@@ -1,0 +1,16 @@
+<div class="scorefield total">
+  <label>Insgesamt</label>
+  {{ total$ | async }}
+</div>
+<div class="scorefield correct">
+  <label>Richtig</label>
+  {{ correct$ | async }}
+</div>
+<div class="scorefield failed">
+  <label>Falsch</label>
+  {{ failed$ | async }}
+</div>
+<div class="scorefield timer" *ngIf="startTimer === true">
+  <label>Zeit</label>
+  {{ timer$ | async }}
+</div>

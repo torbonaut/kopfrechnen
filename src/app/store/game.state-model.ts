@@ -7,7 +7,9 @@ export interface GameStateModel {
   failed: number;
   numberSpace: NumberSpace;
   exercises: Exercise[];
-  duration: number;
+  currentExercise: Partial<Exercise>;
+  operators: number[];
+  timer: number;
 }
 
 export const GameStateDefaults: GameStateModel = {
@@ -16,5 +18,7 @@ export const GameStateDefaults: GameStateModel = {
   failed: 0,
   numberSpace: NumberSpace.SMALL,
   exercises: [],
-  duration: Duration.SHORT
+  currentExercise: null,
+  operators: [1, 2, 3],
+  timer: Duration.SHORT
 };

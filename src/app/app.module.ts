@@ -15,13 +15,20 @@ import {MatToolbarModule} from '@angular/material/toolbar';
 import {MatIconModule} from '@angular/material/icon';
 import {MatButtonModule} from '@angular/material/button';
 import {MatButtonToggleModule} from '@angular/material/button-toggle';
+import { ScoreBoardComponent } from './components/score-board/score-board.component';
+import { TermComponent } from './components/term/term.component';
+import { ResultPadComponent } from './components/result-pad/result-pad.component';
+import {MatCardModule} from '@angular/material/card';
 
 @NgModule({
   declarations: [
     AppComponent,
     PageHomeComponent,
     PageGameComponent,
-    PageResultComponent
+    PageResultComponent,
+    ScoreBoardComponent,
+    TermComponent,
+    ResultPadComponent
   ],
   imports: [
     BrowserModule,
@@ -34,7 +41,8 @@ import {MatButtonToggleModule} from '@angular/material/button-toggle';
     MatToolbarModule,
     MatIconModule,
     MatButtonModule,
-    MatButtonToggleModule
+    MatButtonToggleModule,
+    MatCardModule
   ],
   providers: [],
   bootstrap: [AppComponent]

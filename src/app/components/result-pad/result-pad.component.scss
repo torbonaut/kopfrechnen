@@ -1,0 +1,37 @@
+:host {
+  display: grid;
+  width: 100%;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-rows: auto;
+  grid-column-gap: 6px;
+  grid-row-gap: 6px;
+  grid-template-areas: "one two three"
+    "four five six"
+    "seven eight nine"
+    "zero dot plusminus"
+    "clear empty error"
+    "submit submit submit";
+}
+
+.button {
+  background: #ddd;
+  font-size: 24px;
+  line-height: 2em;
+  text-align: center;
+}
+
+.submit {
+  width: 100%;
+  line-height: 4em;
+  grid-area: submit;
+}
+
+.clear {
+  grid-area: clear;
+  background: #bbb;
+}
+
+.error {
+  grid-area: error;
+  background: rgba(200, 0, 0, 0.2);
+}

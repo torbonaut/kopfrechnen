@@ -1,0 +1,16 @@
+:host {
+  display: block;
+  font-size: 32px;
+  width: 100%;
+  text-align: center;
+  border: 1px dotted #ccc;
+  padding: 30px;
+  box-sizing: border-box;
+  margin: 30px 0;
+}
+
+span { padding: 0 5px; }
+span.number { color: #444; }
+span.operator { color: sandybrown; font-size: 48px; }
+span.equals { color: black; }
+span.answer { color: #777; }
