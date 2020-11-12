@@ -12,7 +12,7 @@ export enum NumberSpace {
 }
 
 export enum Duration {
-  SHORT= 60,
+  SHORT= 10,
   MEDIUM= 120,
   LONG= 300
 }

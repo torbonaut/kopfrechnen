@@ -1,7 +1,7 @@
 import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
 import {Select, Store} from '@ngxs/store';
 import {Duration, NumberSpace, Operator} from '../../models/game.model';
-import {GameSetDuration, GameSetNumberSpace, GameSetOperators} from '../../store/game.actions';
+import {GameReset, GameSetDuration, GameSetNumberSpace, GameSetOperators} from '../../store/game.actions';
 import {GameStateModel} from '../../store/game.state-model';
 import {Observable} from 'rxjs';
 import {GameState} from '../../store/game.state';
@@ -26,7 +26,9 @@ export class PageHomeComponent implements OnInit {
     private store: Store
   ) { }
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.store.dispatch(new GameReset());
+  }
 
   setNumberSpace( { value }): void {
     this.store.dispatch(new GameSetNumberSpace(value));

@@ -1,6 +1,6 @@
 import {ChangeDetectionStrategy, Component, OnDestroy, OnInit} from '@angular/core';
-import {Actions, ofActionSuccessful, Store} from '@ngxs/store';
-import {GameReset, GameTimeOver} from './store/game.actions';
+import {Actions, ofActionSuccessful} from '@ngxs/store';
+import {GameTimeOver} from './store/game.actions';
 import {Router} from '@angular/router';
 import {Subscription} from 'rxjs';
 
@@ -15,18 +15,9 @@ export class AppComponent implements OnInit, OnDestroy {
   subscriptions: Subscription = new Subscription();
 
   constructor(
-    private store: Store,
     private router: Router,
     private actions: Actions
   ) {}
-
-  reset(): void {
-    this.store.dispatch(new GameReset())
-      .toPromise()
-      .then( () => {
-        this.router.navigate(['home']);
-      });
-  }
 
   ngOnInit(): void {
     this.subscriptions.add(

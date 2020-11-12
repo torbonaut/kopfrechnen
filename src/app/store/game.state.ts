@@ -171,7 +171,7 @@ export class GameState {
       answer: userResult,
       operator: currentExercise.operator,
       startTime: currentExercise.startTime,
-      endTime: currentExercise.endTime,
+      endTime: timerEnd,
       resultCorrect
     };
 

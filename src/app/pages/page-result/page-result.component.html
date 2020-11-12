@@ -1,6 +1,8 @@
 <app-score-board [startTimer]="false"></app-score-board>
 <br /><br />
 <h1>Die Zeit ist um!</h1>
+<br />
+<button class="again" mat-button mat-raised-button color="primary" routerLink="/home">Nochmal!</button>
 <br /><br />
 <mat-card *ngFor="let exercise of exercises$ | async">
   <mat-card-header>

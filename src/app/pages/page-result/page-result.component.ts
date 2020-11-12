@@ -39,6 +39,7 @@ export class PageResultComponent implements OnInit {
 
   getDuration(exercise: Exercise): string {
     const duration: number = (exercise.endTime - exercise.startTime) / 1000;
+    console.log(duration, exercise.startTime, exercise.endTime);
     return duration.toFixed(2);
   }
 
