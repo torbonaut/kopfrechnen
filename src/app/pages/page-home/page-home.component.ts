@@ -5,6 +5,7 @@ import {GameReset, GameSetDuration, GameSetNumberSpace, GameSetOperators} from '
 import {GameStateModel} from '../../store/game.state-model';
 import {Observable} from 'rxjs';
 import {GameState} from '../../store/game.state';
+import {Term} from '../../classes/math.util';
 
 @Component({
   selector: 'app-page-home',
@@ -40,5 +41,14 @@ export class PageHomeComponent implements OnInit {
 
   setOperators( { value }): void {
     this.store.dispatch(new GameSetOperators(value));
+  }
+
+  Yolo(): void {
+    const n = Term.randomIntInclusive(1, 1000);
+    console.log(n);
+    const tb = performance.now();
+    console.log(Term.allDivisors(n));
+    const te = performance.now();
+    console.log( ((te - tb) / 1000) );
   }
 }

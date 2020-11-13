@@ -5,6 +5,7 @@ import {Exercise, NumberSpace} from '../../models/game.model';
 import {Actions, ofActionSuccessful, Select, Store} from '@ngxs/store';
 import {GameState} from '../../store/game.state';
 import {GameSetCurrentExercise, GameSubmitCurrentExercise} from '../../store/game.actions';
+import {Term} from '../../classes/math.util';
 
 @Component({
   selector: 'app-term',
@@ -55,22 +56,18 @@ export class TermComponent implements OnInit, OnDestroy {
     );
   }
 
-  getRandomIntInclusive(a, b): number {
-    const min = Math.ceil(a);
-    const max = Math.floor(b);
-    return Math.floor(Math.random() * (max - min + 1)) + min;
-  }
+
 
   getRandomNumberSpaceNumber(): number {
     switch (this.numberSpace) {
-      case NumberSpace.SMALL: return this.getRandomIntInclusive(-10, 10); break;
-      case NumberSpace.MEDIUM: return this.getRandomIntInclusive(-100, 100); break;
-      case NumberSpace.BIG: return this.getRandomIntInclusive(-1000, 1000); break;
+      case NumberSpace.SMALL: return Term.randomIntInclusive(-10, 10); break;
+      case NumberSpace.MEDIUM: return Term.randomIntInclusive(-100, 100); break;
+      case NumberSpace.BIG: return Term.randomIntInclusive(-1000, 1000); break;
     }
   }
 
   getRandomOperator(): number {
-    return this.operators[this.getRandomIntInclusive(0, this.operators.length - 1)];
+    return this.operators[Term.randomIntInclusive(0, this.operators.length - 1)];
   }
 
   shuffle(): void {
