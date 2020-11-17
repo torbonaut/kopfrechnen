@@ -1,9 +1,17 @@
-<h3>Zahlenraum</h3>
+<h3>Schwierigkeitsgrad</h3>
 <p>
-  <mat-button-toggle-group name="numberSpace" aria-label="Zahlenraum" (change)="setNumberSpace($event)" [value]="numberSpace$ | async">
-    <mat-button-toggle [value]="numberSpace.SMALL">Leicht</mat-button-toggle>
-    <mat-button-toggle [value]="numberSpace.MEDIUM">Mittel</mat-button-toggle>
-    <mat-button-toggle [value]="numberSpace.BIG">Schwierig</mat-button-toggle>
+  <mat-button-toggle-group
+    class="five"
+    name="difficulty"
+    aria-label="Schwierigkeitsgrad"
+    (change)="setDifficulty($event)"
+    [value]="difficulty$ | async"
+  >
+    <mat-button-toggle [value]="difficulty.TODDLER">1</mat-button-toggle>
+    <mat-button-toggle [value]="difficulty.EASY">2</mat-button-toggle>
+    <mat-button-toggle [value]="difficulty.MEDIUM">3</mat-button-toggle>
+    <mat-button-toggle [value]="difficulty.HARD">4</mat-button-toggle>
+    <mat-button-toggle [value]="difficulty.MASTER">5</mat-button-toggle>
   </mat-button-toggle-group>
 </p>
 <br />
@@ -34,5 +42,3 @@
 </p>
 <br />
 <button mat-button mat-raised-button color="primary" routerLink="/game">Starten</button>
-
-<button mat-button mat-raised-button (click)="Yolo()">Yolo</button>

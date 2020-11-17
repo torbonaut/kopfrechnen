@@ -4,12 +4,12 @@ import {Injectable} from '@angular/core';
 import {
   GameAddExercise,
   GameReset,
-  GameSetCurrentExercise, GameSetCurrentExerciseAnswer, GameSetCurrentExerciseStringAnswer,
+  GameSetCurrentExercise, GameSetCurrentExerciseAnswer, GameSetCurrentExerciseStringAnswer, GameSetDifficulty,
   GameSetDuration,
-  GameSetNumberSpace, GameSetOperators, GameSubmitCurrentExercise,
+  GameSetOperators, GameSubmitCurrentExercise,
   GameTick, GameTimeOver
 } from './game.actions';
-import {Duration, Exercise, NumberSpace, Operator} from '../models/game.model';
+import {Difficulty, Duration, Exercise, Operator} from '../models/game.model';
 
 @State<GameStateModel>({
   name: 'game',
@@ -18,8 +18,8 @@ import {Duration, Exercise, NumberSpace, Operator} from '../models/game.model';
 @Injectable()
 export class GameState {
   @Selector()
-  static numberSpace(state: GameStateModel): number {
-    return state.numberSpace;
+  static difficulty(state: GameStateModel): number {
+    return state.difficulty;
   }
 
   @Selector()
@@ -49,12 +49,12 @@ export class GameState {
 
   @Selector()
   static currentAnswer(state: GameStateModel): number | undefined {
-    return state.currentExercise.answer;
+    return state.currentExercise.userAnswer;
   }
 
   @Selector()
   static currentStrAnswer(state: GameStateModel): string {
-    return state.currentExercise.strAnswer;
+    return state.currentExercise.userAnswerStr;
   }
 
   @Selector()
@@ -79,10 +79,10 @@ export class GameState {
     ctx.patchState( { timer });
   }
 
-  @Action(GameSetNumberSpace)
-  setNumberSpace(ctx: StateContext<GameStateModel>, action: GameSetNumberSpace): any {
-    const numberSpace: NumberSpace = action.numberSpace;
-    ctx.patchState({ numberSpace });
+  @Action(GameSetDifficulty)
+  setNumberSpace(ctx: StateContext<GameStateModel>, action: GameSetDifficulty): any {
+    const difficulty: Difficulty = action.difficulty;
+    ctx.patchState({ difficulty });
   }
 
   @Action(GameSetDuration)
@@ -104,56 +104,30 @@ export class GameState {
   @Action(GameSetCurrentExerciseAnswer)
   setCurrentExerciseAnswer(ctx: StateContext<GameStateModel>, action: GameSetCurrentExerciseAnswer): any {
     const state = ctx.getState();
-    ctx.patchState( { currentExercise: { ...state.currentExercise, answer: action.answer}});
+    ctx.patchState( { currentExercise: { ...state.currentExercise, userAnswer: action.answer}});
   }
 
   @Action(GameSetCurrentExerciseStringAnswer)
   setCurrentExerciseStringAnswer(ctx: StateContext<GameStateModel>, action: GameSetCurrentExerciseStringAnswer): any {
     const state = ctx.getState();
-    ctx.patchState( { currentExercise: { ...state.currentExercise, strAnswer: action.answer } });
+    ctx.patchState( { currentExercise: { ...state.currentExercise, userAnswerStr: action.answer } });
   }
 
   @Action(GameSubmitCurrentExercise)
   submitCurrentExercise(ctx: StateContext<GameStateModel>, action: GameSubmitCurrentExercise): any {
     const state = ctx.getState();
     const currentExercise = { ...state.currentExercise };
-    const timerEnd = performance.now();
+    const endTime = performance.now();
 
     let userResult;
 
-    if (currentExercise.strAnswer !== 'ERR') {
-      userResult = parseFloat(currentExercise.strAnswer);
+    if (currentExercise.userAnswerStr !== 'ERR') {
+      userResult = parseFloat(currentExercise.userAnswerStr);
     }
 
-    let computedResult;
+    const computedAnswer = 5;
+    const resultCorrect = true;
 
-    switch (currentExercise.operator) {
-      case Operator.ADD:
-        computedResult = currentExercise.a + currentExercise.b;
-        break;
-      case Operator.SUBTRACT:
-        computedResult = currentExercise.a - currentExercise.b;
-        break;
-      case Operator.MULTIPLY:
-        if (currentExercise.b !== 0) {
-          computedResult = currentExercise.a * currentExercise.b;
-        }
-        break;
-      case Operator.DIVIDE:
-        computedResult = currentExercise.a / currentExercise.b;
-    }
-
-    let resultCorrect;
-
-    if (typeof computedResult === 'undefined' && typeof userResult === 'undefined') {
-      resultCorrect = true;
-    } else if (typeof computedResult === 'undefined' && typeof userResult !== 'undefined') {
-      resultCorrect = false;
-    } else if (typeof computedResult !== 'undefined' && typeof userResult === 'undefined') {
-      return false;
-    } else {
-      resultCorrect = userResult.toFixed(2) === computedResult.toFixed(2);
-    }
 
     let correct = state.correct;
     let failed = state.failed;
@@ -165,14 +139,14 @@ export class GameState {
     }
 
     const exercise: Exercise = {
-      a: currentExercise.a,
-      b: currentExercise.b,
-      strAnswer: currentExercise.strAnswer,
-      answer: userResult,
-      operator: currentExercise.operator,
       startTime: currentExercise.startTime,
-      endTime: timerEnd,
-      resultCorrect
+      endTime: currentExercise.endTime,
+      term: currentExercise.term,
+      formattedTerm: currentExercise.formattedTerm,
+      resultCorrect,
+      userAnswer: currentExercise.userAnswer,
+      userAnswerStr: currentExercise.userAnswerStr,
+      computedAnswer
     };
 
     const exercises: Exercise[] = [...state.exercises];

@@ -1,52 +1,44 @@
-import {ChangeDetectionStrategy, Component, OnDestroy, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, Component, OnDestroy, OnInit, SecurityContext, ViewEncapsulation} from '@angular/core';
 import {BehaviorSubject, interval, Observable, Subscription, timer} from 'rxjs';
-import {finalize, switchMap, takeUntil, tap} from 'rxjs/operators';
-import {Exercise, NumberSpace} from '../../models/game.model';
+import {finalize, takeUntil, tap} from 'rxjs/operators';
+import {DEFAULT_OPERATORS, Difficulty, Exercise, SHUFFLE_TIME} from '../../models/game.model';
 import {Actions, ofActionSuccessful, Select, Store} from '@ngxs/store';
 import {GameState} from '../../store/game.state';
 import {GameSetCurrentExercise, GameSubmitCurrentExercise} from '../../store/game.actions';
-import {Term} from '../../classes/math.util';
+import {TermTree} from '../../classes/math.util';
+import {DomSanitizer, SafeHtml} from '@angular/platform-browser';
 
 @Component({
   selector: 'app-term',
   templateUrl: './term.component.html',
   styleUrls: ['./term.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  encapsulation: ViewEncapsulation.None
 })
 export class TermComponent implements OnInit, OnDestroy {
 
-  numberSpace = null;
+  Difficulty = Difficulty;
 
-  numA$: BehaviorSubject<number> = new BehaviorSubject(0);
-  numB$: BehaviorSubject<number> = new BehaviorSubject(0);
-  op$: BehaviorSubject<number> = new BehaviorSubject(1);
-  opStr$: Observable<string>;
+  difficulty = Difficulty.EASY;
+  operators: number[] = DEFAULT_OPERATORS;
+
+  term$: BehaviorSubject<string> = new BehaviorSubject('');
+  formattedTerm$: BehaviorSubject<string> = new BehaviorSubject('');
+  computedAnswer$: BehaviorSubject<number> = new BehaviorSubject( null);
 
   @Select(GameState.currentStrAnswer) currentStringAnswer$: Observable<string>;
-
-  operators: number[];
 
   subscriptions: Subscription = new Subscription();
 
   constructor(
     private store: Store,
-    private actions: Actions
+    private actions: Actions,
+    private sanitizer: DomSanitizer
   ) { }
 
   ngOnInit(): void {
-    this.numberSpace = this.store.selectSnapshot(GameState.numberSpace);
+    this.difficulty = this.store.selectSnapshot(GameState.difficulty);
     this.operators = this.store.selectSnapshot(GameState.operators);
-
-    this.opStr$ = this.op$.pipe(
-      switchMap( (op: number) => {
-        switch (op) {
-          case 1: return '+';
-          case 2: return '-';
-          case 3: return '*';
-          case 4: return '/';
-        }
-      })
-    );
     this.shuffle();
 
     this.subscriptions.add(
@@ -57,37 +49,25 @@ export class TermComponent implements OnInit, OnDestroy {
   }
 
 
-
-  getRandomNumberSpaceNumber(): number {
-    switch (this.numberSpace) {
-      case NumberSpace.SMALL: return Term.randomIntInclusive(-10, 10); break;
-      case NumberSpace.MEDIUM: return Term.randomIntInclusive(-100, 100); break;
-      case NumberSpace.BIG: return Term.randomIntInclusive(-1000, 1000); break;
-    }
-  }
-
-  getRandomOperator(): number {
-    return this.operators[Term.randomIntInclusive(0, this.operators.length - 1)];
-  }
-
   shuffle(): void {
     const source$ = interval(50);
-    const until$ = timer(500);
+    const until$ = timer(SHUFFLE_TIME);
 
     this.subscriptions.add(
       source$.pipe(
         tap( () => {
-          this.numA$.next(this.getRandomNumberSpaceNumber());
-          this.numB$.next(this.getRandomNumberSpaceNumber());
-          this.op$.next(this.getRandomOperator());
+          const term: TermTree = new TermTree(this.difficulty, this.operators);
+          this.term$.next(term.toString());
+          this.formattedTerm$.next(term.toFormattedString());
+          this.computedAnswer$.next(term.calculateResult());
         }),
         takeUntil(until$),
         finalize( () => {
           const exercise: Partial<Exercise> = {
-            a: this.numA$.getValue(),
-            b: this.numB$.getValue(),
-            operator: this.op$.getValue(),
-            startTime: performance.now()
+            startTime: performance.now(),
+            term:  this.term$.getValue(),
+            formattedTerm: this.formattedTerm$.getValue(),
+            computedAnswer: this.computedAnswer$.getValue()
           };
           this.store.dispatch(new GameSetCurrentExercise(exercise));
         })
@@ -95,8 +75,8 @@ export class TermComponent implements OnInit, OnDestroy {
     );
   }
 
-  getStringAnswer(answer: string): string {
-    return ((typeof answer === 'undefined' || answer === '') ? '?' : answer);
+  sanitize(str: string): SafeHtml {
+    return this.sanitizer.sanitize(SecurityContext.HTML, str);
   }
 
   ngOnDestroy(): void {

@@ -1,4 +1,4 @@
-import {Operator} from '../models/game.model';
+import {DEFAULT_OPERATORS, Difficulty, Operator, OperatorRange} from '../models/game.model';
 
 export class OperatorUtil {
   public static toString(operator: Operator): string {
@@ -13,58 +13,192 @@ export class OperatorUtil {
     if (!operators || operators.length === 0) {
       return null;
     }
-    return operators[Term.randomIntInclusive(0, operators.length - 1)];
+    return operators[MathUtil.randomIntInclusive(0, operators.length - 1 )];
   }
 }
 
 export class TreeNode {
-  public operator: Operator;
-  public left: TreeNode | number;
-  public right: TreeNode | number;
+  protected operator: Operator;
+  protected left: TreeNode | number;
+  protected right: TreeNode | number;
+  protected encapsulateWithParenthesis: boolean;
 
-  constructor(treeLeft: TreeNode | number, treeRight: TreeNode | number, operator: Operator) {
+  constructor(treeLeft: TreeNode | number, treeRight: TreeNode | number, operator: Operator, encapsulateWithParenthesis: boolean = true) {
     this.left = treeLeft;
     this.right = treeRight;
     this.operator = operator;
+    this.encapsulateWithParenthesis = encapsulateWithParenthesis;
   }
 
   public toString(): string {
-    return '(' + this.left.toString() + OperatorUtil.toString(this.operator) + this.right.toString();
+    return (this.encapsulateWithParenthesis === true ? '(' : '')
+      + this.left.toString()
+      + OperatorUtil.toString(this.operator)
+      + this.right.toString() +
+      (this.encapsulateWithParenthesis === true ? ')' : '');
+  }
+
+  public toFormattedString(): string {
+    return (this.encapsulateWithParenthesis === true ? '<span class="parenthesis">(</span>' : '')
+      + '<span class="number numberA">' + (typeof this.left === 'number' ? this.left.toString() : this.left.toFormattedString()) + '</span>'
+      + '<span class="operator">' + OperatorUtil.toString(this.operator) + '</span>'
+      + '<span class="number numberB">' + (typeof this.right === 'number' ? this.right.toString() : this.right.toFormattedString()) + '</span>'
+      + (this.encapsulateWithParenthesis === true ? '<span class="parenthesis">)</span>' : '');
   }
 }
 
-export class Tree {
-  public root: TreeNode;
+export class TermTree {
+  protected root: TreeNode;
+  protected difficulty: number;
+  protected nodeCount: number;
+  protected operators: Operator[];
 
-  constructor(root: TreeNode) {
-    this.root = root;
+  constructor(difficulty: number, operators: Operator[] = DEFAULT_OPERATORS) {
+    this.difficulty = difficulty;
+    this.operators = operators;
+    switch (difficulty) {
+      case Difficulty.TODDLER: this.nodeCount = 2; break;
+      case Difficulty.EASY: this.nodeCount = 2; break;
+      case Difficulty.MEDIUM: this.nodeCount = 3; break;
+      case Difficulty.HARD: this.nodeCount = 3; break;
+      case Difficulty.MASTER: this.nodeCount = 4; break;
+    }
+    this.root = this.buildTree(this.nodeCount, difficulty, false, false) as TreeNode;
   }
 
-  public static toString(): string {
-    return '';
+  public toString(): string {
+    return this.root.toString();
   }
 
-  public static calculateResult(): number {
+  public toFormattedString(): string {
+    return this.root.toFormattedString();
+  }
+
+  public calculateResult(): number {
     return 0;
   }
 
-  public static buildTree(nodeCount: number, min: number, max: number): TreeNode | number {
+  protected buildTree(
+    nodeCount: number,
+    difficulty: number,
+    leftOrRight: boolean = false,
+    parenthesis = true
+  ): TreeNode | number {
+
+    if (nodeCount < 1) {
+      throw new Error('Tree-->buildTree-->nodeCount < 1 given');
+    }
+
+    const operator: Operator = OperatorUtil.getRandomOperator(this.operators);
+
+    const range = this.getOperatorRange(difficulty, operator);
+
     if (nodeCount === 1) {
-      return Term.randomIntInclusive(min, max);
+      return MathUtil.randomIntInclusive(
+        leftOrRight === false ? range.OperatorAMin : range.OperatorBMin,
+        leftOrRight === false ? range.OperatorAMax : range.OperatorBMax);
     }
 
     const numLeft = Math.floor(nodeCount / 2);
     const numRight = Math.ceil(nodeCount / 2);
-    const leftSubTree = Tree.buildTree(numLeft, 0, 100);
-    const rightSubTree = Tree.buildTree(numRight, 0, 100);
-    const operator: Operator = OperatorUtil.getRandomOperator([0, 1, 2, 3]);
+    const leftSubTree = this.buildTree(numLeft, difficulty, false, true);
+    const rightSubTree = this.buildTree(numRight, difficulty, true, true);
 
-    return new TreeNode(leftSubTree, rightSubTree, operator);
+    return new TreeNode(leftSubTree, rightSubTree, operator, parenthesis);
+  }
+
+  protected getOperatorRange(difficulty: Difficulty, operator: Operator): OperatorRange {
+    switch (operator) {
+      case Operator.ADD: return this.getAdditionRange(difficulty); break;
+      case Operator.SUBTRACT: return this.getSubtractionRange(difficulty); break;
+      case Operator.MULTIPLY: return this.getMultiplicationRange(difficulty); break;
+      case Operator.DIVIDE: return this.getDivisionRange(difficulty); break;
+    }
+  }
+
+  protected getAdditionRange(difficulty: Difficulty): OperatorRange {
+    switch (difficulty) {
+      case Difficulty.TODDLER:
+        return { OperatorAMin: 0, OperatorAMax: 10, OperatorBMin: 0, OperatorBMax: 10 };
+        break;
+      case Difficulty.EASY:
+        return { OperatorAMin: -10, OperatorAMax: 10, OperatorBMin: -10, OperatorBMax: 10 };
+        break;
+      case Difficulty.MEDIUM:
+        return { OperatorAMin: -25, OperatorAMax: 25, OperatorBMin: -25, OperatorBMax: 25 };
+        break;
+      case Difficulty.HARD:
+        return { OperatorAMin: -100, OperatorAMax: 100, OperatorBMin: -100, OperatorBMax: 100 };
+        break;
+      case Difficulty.MASTER:
+        return { OperatorAMin: -500, OperatorAMax: 500, OperatorBMin: -500, OperatorBMax: 500 };
+        break;
+    }
+  }
+
+  protected getSubtractionRange(difficulty: Difficulty): OperatorRange {
+    switch (difficulty) {
+      case Difficulty.TODDLER:
+        return { OperatorAMin: 0, OperatorAMax: 10, OperatorBMin: 0, OperatorBMax: 10 };
+        break;
+      case Difficulty.EASY:
+        return { OperatorAMin: -10, OperatorAMax: 10, OperatorBMin: -10, OperatorBMax: 10 };
+        break;
+      case Difficulty.MEDIUM:
+        return { OperatorAMin: -25, OperatorAMax: 25, OperatorBMin: -25, OperatorBMax: 25 };
+        break;
+      case Difficulty.HARD:
+        return { OperatorAMin: -100, OperatorAMax: 100, OperatorBMin: -100, OperatorBMax: 100 };
+        break;
+      case Difficulty.MASTER:
+        return { OperatorAMin: -500, OperatorAMax: 500, OperatorBMin: -500, OperatorBMax: 500 };
+        break;
+    }
+  }
+
+  protected getMultiplicationRange(difficulty: Difficulty): OperatorRange {
+    switch (difficulty) {
+      case Difficulty.TODDLER:
+        return { OperatorAMin: 0, OperatorAMax: 10, OperatorBMin: 0, OperatorBMax: 10 };
+        break;
+      case Difficulty.EASY:
+        return { OperatorAMin: -10, OperatorAMax: 10, OperatorBMin: -10, OperatorBMax: 10 };
+        break;
+      case Difficulty.MEDIUM:
+        return { OperatorAMin: -25, OperatorAMax: 25, OperatorBMin: 0, OperatorBMax: 10 };
+        break;
+      case Difficulty.HARD:
+        return { OperatorAMin: -100, OperatorAMax: 100, OperatorBMin: 0, OperatorBMax: 10 };
+        break;
+      case Difficulty.MASTER:
+        return { OperatorAMin: -100, OperatorAMax: 100, OperatorBMin: -100, OperatorBMax: 100 };
+        break;
+    }
+  }
+
+  protected getDivisionRange(difficulty: Difficulty): OperatorRange {
+    switch (difficulty) {
+      case Difficulty.TODDLER:
+        return { OperatorAMin: 0, OperatorAMax: 10, OperatorBMin: 1, OperatorBMax: 3 };
+        break;
+      case Difficulty.EASY:
+        return { OperatorAMin: -10, OperatorAMax: 10, OperatorBMin: -1, OperatorBMax: 3 };
+        break;
+      case Difficulty.MEDIUM:
+        return { OperatorAMin: -25, OperatorAMax: 25, OperatorBMin: -5, OperatorBMax: 5 };
+        break;
+      case Difficulty.HARD:
+        return { OperatorAMin: -100, OperatorAMax: 100, OperatorBMin: -10, OperatorBMax: 10 };
+        break;
+      case Difficulty.MASTER:
+        return { OperatorAMin: -500, OperatorAMax: 500, OperatorBMin: -25, OperatorBMax: 25 };
+        break;
+    }
   }
 
 }
 
-export class Term {
+export class MathUtil {
   /* get a random int between range a,  b, including both*/
   public static randomIntInclusive(a, b): number {
     const min = Math.ceil(a);

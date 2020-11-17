@@ -10,6 +10,12 @@ mat-button-toggle-group {
       flex: 1 0 20%;
     }
   }
+
+  &.five {
+    mat-button-toggle {
+      flex: 1 0 15%;
+    }
+  }
 }
 
 button {

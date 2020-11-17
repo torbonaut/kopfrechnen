@@ -1,5 +1,9 @@
-<span class="number">{{ numA$ | async }}</span>
-<span class="operator">{{ opStr$ | async }}</span>
-<span class="number">{{ numB$ | async }}</span>
-<span class="equals">=</span>
-<span class="answer">{{ getStringAnswer( currentStringAnswer$ | async)}}</span>
+<div class="equation" [ngClass]="{
+    'small': difficulty === Difficulty.MASTER,
+    'medium': (difficulty === Difficulty.MEDIUM || difficulty === Difficulty.HARD)
+  }">
+  <div class="term" [innerHTML]="sanitize(formattedTerm$ | async)"></div>
+  <span class="equals">=</span>
+  <span class="result">{{ currentStringAnswer$ | async }}</span>
+</div>
+

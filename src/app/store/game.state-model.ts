@@ -1,11 +1,11 @@
-import {Duration, Exercise, NumberSpace} from '../models/game.model';
+import {Difficulty, Duration, Exercise} from '../models/game.model';
 
 
 export interface GameStateModel {
   total: number;
   correct: number;
   failed: number;
-  numberSpace: NumberSpace;
+  difficulty: Difficulty;
   exercises: Exercise[];
   currentExercise: Partial<Exercise>;
   operators: number[];
@@ -16,7 +16,7 @@ export const GameStateDefaults: GameStateModel = {
   total: 0,
   correct: 0,
   failed: 0,
-  numberSpace: NumberSpace.SMALL,
+  difficulty: Difficulty.EASY,
   exercises: [],
   currentExercise: null,
   operators: [1, 2, 3],

@@ -1,4 +1,4 @@
-import {Duration, Exercise, NumberSpace} from '../models/game.model';
+import {Difficulty, Exercise} from '../models/game.model';
 
 export class GameReset {
   static readonly type = '[Game] Reset';
@@ -13,9 +13,9 @@ export class GameTick {
   static readonly type = '[Game] Tick';
 }
 
-export class GameSetNumberSpace {
-  static readonly type = '[Game] set number space';
-  constructor(public numberSpace: number) {}
+export class GameSetDifficulty {
+  static readonly type = '[Game] set difficulty';
+  constructor(public difficulty: Difficulty) {}
 }
 
 export class GameSetDuration {

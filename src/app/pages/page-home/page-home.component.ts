@@ -1,11 +1,15 @@
 import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
 import {Select, Store} from '@ngxs/store';
-import {Duration, NumberSpace, Operator} from '../../models/game.model';
-import {GameReset, GameSetDuration, GameSetNumberSpace, GameSetOperators} from '../../store/game.actions';
-import {GameStateModel} from '../../store/game.state-model';
+import {Difficulty, Duration, Operator} from '../../models/game.model';
+import {
+  GameReset,
+  GameSetDifficulty,
+  GameSetDuration,
+  GameSetOperators
+} from '../../store/game.actions';
 import {Observable} from 'rxjs';
 import {GameState} from '../../store/game.state';
-import {Term} from '../../classes/math.util';
+import {MathUtil, TermTree} from '../../classes/math.util';
 
 @Component({
   selector: 'app-page-home',
@@ -15,11 +19,11 @@ import {Term} from '../../classes/math.util';
 })
 export class PageHomeComponent implements OnInit {
 
-  numberSpace = NumberSpace;
+  difficulty = Difficulty;
   duration = Duration;
   operator = Operator;
 
-  @Select(GameState.numberSpace) numberSpace$: Observable<number>;
+  @Select(GameState.difficulty) difficulty$: Observable<number>;
   @Select(GameState.timer) duration$: Observable<number>;
   @Select(GameState.operators) operators$: Observable<number[]>;
 
@@ -31,8 +35,8 @@ export class PageHomeComponent implements OnInit {
     this.store.dispatch(new GameReset());
   }
 
-  setNumberSpace( { value }): void {
-    this.store.dispatch(new GameSetNumberSpace(value));
+  setDifficulty( { value }): void {
+    this.store.dispatch(new GameSetDifficulty(value));
   }
 
   setDuration( { value }): void {
@@ -41,14 +45,5 @@ export class PageHomeComponent implements OnInit {
 
   setOperators( { value }): void {
     this.store.dispatch(new GameSetOperators(value));
-  }
-
-  Yolo(): void {
-    const n = Term.randomIntInclusive(1, 1000);
-    console.log(n);
-    const tb = performance.now();
-    console.log(Term.allDivisors(n));
-    const te = performance.now();
-    console.log( ((te - tb) / 1000) );
   }
 }

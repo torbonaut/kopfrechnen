@@ -1,3 +1,5 @@
+export const SHUFFLE_TIME = 500;
+
 export enum Operator {
   ADD= 1,
   SUBTRACT= 2,
@@ -5,11 +7,11 @@ export enum Operator {
   DIVIDE = 4
 }
 
-export enum NumberSpace {
-  SMALL= 10,
-  MEDIUM = 100,
-  BIG= 1000
-}
+export const DEFAULT_OPERATORS: Operator[] = [
+  Operator.ADD,
+  Operator.SUBTRACT,
+  Operator.MULTIPLY
+];
 
 export enum Duration {
   SHORT= 10,
@@ -17,12 +19,27 @@ export enum Duration {
   LONG= 300
 }
 
+export enum Difficulty {
+  TODDLER,
+  EASY = 1,
+  MEDIUM = 2,
+  HARD= 3,
+  MASTER = 4
+}
+
+export interface OperatorRange {
+  OperatorAMin: number;
+  OperatorAMax: number;
+  OperatorBMin: number;
+  OperatorBMax: number;
+}
+
 export interface Exercise {
-  a: number;
-  b: number;
-  operator: number;
-  answer: number | undefined;
-  strAnswer: string;
+  term: string;
+  formattedTerm: string;
+  computedAnswer: number;
+  userAnswer: number;
+  userAnswerStr: string;
   startTime: number;
   endTime: number;
   resultCorrect: boolean;
